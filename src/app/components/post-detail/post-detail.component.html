@@ -1,0 +1,114 @@
+<div class="post-detail-container">
+  <!-- Back Button -->
+  <button class="back-btn" (click)="goBack()">
+    ← Retour aux posts
+  </button>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading">Chargement du post...</div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage()) {
+    <div class="error-message">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Post Detail -->
+  @if (post()) {
+    <article class="post-detail">
+      <header class="post-header">
+        <h1>{{ post()?.title }}</h1>
+        <div class="post-meta">
+          <span class="author">
+            @if (post()?.expand?.author?.name) {
+              <span>Par {{ post()?.expand?.author?.name }}</span>
+            } @else {
+              <span>Par Utilisateur inconnu</span>
+            }
+          </span>
+          <span class="date">{{ formatDate(post()!.created) }}</span>
+        </div>
+      </header>
+
+      <div class="post-content">
+        <p>{{ post()?.content }}</p>
+      </div>
+    </article>
+  }
+
+  <!-- Messages Section -->
+  <section class="messages-section">
+    <h2>Messages ({{ messages().length }})</h2>
+
+    <!-- New Message Form (only for authenticated users) -->
+    @if (currentUser()) {
+      <div class="new-message-form">
+        <form (ngSubmit)="createMessage()" #messageForm="ngForm">
+          <div class="form-group">
+            <textarea
+              [(ngModel)]="newMessageContent"
+              name="content"
+              required
+              [disabled]="isCreatingMessage()"
+              placeholder="Écrivez votre message..."
+              rows="3"></textarea>
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="isCreatingMessage() || !messageForm.form.valid"
+            class="submit-btn">
+            @if (isCreatingMessage()) {
+              <span>Envoi...</span>
+            } @else {
+              <span>Envoyer</span>
+            }
+          </button>
+        </form>
+      </div>
+    } @else {
+      <div class="auth-prompt">
+        <p>
+          <a routerLink="/auth">Connectez-vous</a> pour participer à la discussion.
+        </p>
+      </div>
+    }
+
+    <!-- Messages List -->
+    <div class="messages-list">
+      @if (messages().length === 0) {
+        <div class="no-messages">Aucun message pour le moment.</div>
+      } @else {
+        @for (message of messages(); track message.id) {
+          <div class="message-card">
+            <div class="message-header">
+              <span class="message-author">
+                @if (message.expand?.author?.name) {
+                  <span>{{ message.expand?.author?.name }}</span>
+                } @else {
+                  <span>Utilisateur inconnu</span>
+                }
+              </span>
+              <span class="message-date">{{ formatDate(message.created) }}</span>
+            </div>
+
+            <div class="message-content">
+              <p>{{ message.content }}</p>
+            </div>
+
+            @if (canDeleteMessage(message)) {
+              <div class="message-actions">
+                <button (click)="deleteMessage(message.id)" class="delete-btn">
+                  Supprimer
+                </button>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </section>
+</div>

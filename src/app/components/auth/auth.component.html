@@ -1,0 +1,93 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>{{ isLoginMode ? 'Connexion' : 'Inscription' }}</h2>
+
+    <form (ngSubmit)="onSubmit()" #authForm="ngForm">
+      <!-- Nom (uniquement pour l'inscription) -->
+      @if (!isLoginMode) {
+        <div class="form-group">
+          <label for="name">Nom :</label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="name"
+            name="name"
+            required
+            [disabled]="isLoading">
+        </div>
+      }
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email :</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          [disabled]="isLoading">
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="form-group">
+        <label for="password">Mot de passe :</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          [disabled]="isLoading">
+      </div>
+
+      <!-- Confirmation mot de passe (uniquement pour l'inscription) -->
+      @if (!isLoginMode) {
+        <div class="form-group">
+          <label for="passwordConfirm">Confirmer le mot de passe :</label>
+          <input
+            type="password"
+            id="passwordConfirm"
+            [(ngModel)]="passwordConfirm"
+            name="passwordConfirm"
+            required
+            [disabled]="isLoading">
+        </div>
+      }
+
+      <!-- Message d'erreur -->
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <!-- Bouton de soumission -->
+      <button
+        type="submit"
+        [disabled]="isLoading || !authForm.form.valid"
+        class="submit-btn">
+        @if (isLoading) {
+          <span>Chargement...</span>
+        } @else {
+          <span>{{ isLoginMode ? 'Se connecter' : 'S\'inscrire' }}</span>
+        }
+      </button>
+    </form>
+
+    <!-- Lien pour changer de mode -->
+    <div class="switch-mode">
+      @if (isLoginMode) {
+        <p>
+          Pas encore de compte ?
+          <a href="#" (click)="switchMode(); $event.preventDefault()">S'inscrire</a>
+        </p>
+      } @else {
+        <p>
+          Déjà un compte ?
+          <a href="#" (click)="switchMode(); $event.preventDefault()">Se connecter</a>
+        </p>
+      }
+    </div>
+  </div>
+</div>

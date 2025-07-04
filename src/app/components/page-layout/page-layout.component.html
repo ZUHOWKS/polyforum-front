@@ -1,0 +1,50 @@
+<div class="page-layout">
+  <header class="header">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <a routerLink="/posts" class="brand-link">
+          <h1>PolyForum</h1>
+        </a>
+      </div>
+
+      <div class="navbar-actions">
+        @if (currentUser()) {
+          <div class="user-profile">
+            <div class="user-avatar">
+              <img
+                [src]="userAvatarUrl()"
+                [alt]="currentUser()?.name || 'User avatar'"
+                class="avatar-image">
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ currentUser()?.name }}</span>
+              <span class="user-email">{{ currentUser()?.email }}</span>
+            </div>
+            <button
+              class="logout-btn"
+              (click)="logout()"
+              type="button">
+              Déconnexion
+            </button>
+          </div>
+        } @else {
+          <div class="auth-actions">
+            <a routerLink="/auth" class="login-btn">
+              Connexion
+            </a>
+          </div>
+        }
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <router-outlet />
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2024 PolyForum. Tous droits réservés.</p>
+    </div>
+  </footer>
+</div>
