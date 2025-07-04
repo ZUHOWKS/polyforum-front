@@ -74,8 +74,16 @@ Pour une configuration simple, vous pouvez définir les règles suivantes :
 
 **Collection posts :**
 
-- List/Search rule: `@request.auth.id != ""`
-- View rule: `@request.auth.id != ""`
+- List/Search rule: (vide - permet de visiter le forum)
+- View rule: (vide - permet de visiter le forum)
+- Create rule: `@request.auth.id != ""`
+- Update rule: `@request.auth.id = author.id`
+- Delete rule: `@request.auth.id = author.id`
+
+**Collection messages :**
+
+- List/Search rule: (vide - permet de visiter le forum)
+- View rule: (vide - permet de visiter le forum)
 - Create rule: `@request.auth.id != ""`
 - Update rule: `@request.auth.id = author.id`
 - Delete rule: `@request.auth.id = author.id`
