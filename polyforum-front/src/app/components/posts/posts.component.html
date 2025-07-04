@@ -1,0 +1,125 @@
+<div class="posts-container">
+  <header class="posts-header">
+    <h1>Forum Posts</h1>
+    <div class="header-actions">
+      @if (currentUser()) {
+        <span class="welcome-message">
+          Bienvenue, {{ currentUser()?.name || currentUser()?.email }}
+        </span>
+        <button class="btn-primary" (click)="toggleCreateForm()">
+          {{ showCreateForm() ? 'Annuler' : 'Nouveau Post' }}
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- New Post Form -->
+  @if (showCreateForm()) {
+    <div class="new-post-form">
+      <h2>Créer un nouveau post</h2>
+      <form (ngSubmit)="createPost()" #postForm="ngForm">
+        <div class="form-group">
+          <label for="title">Titre :</label>
+          <input
+            type="text"
+            id="title"
+            [(ngModel)]="newPostTitle"
+            name="title"
+            required
+            [disabled]="isCreatingPost()"
+            placeholder="Titre du post...">
+        </div>
+
+        <div class="form-group">
+          <label for="content">Contenu :</label>
+          <textarea
+            id="content"
+            [(ngModel)]="newPostContent"
+            name="content"
+            required
+            [disabled]="isCreatingPost()"
+            placeholder="Contenu du post..."
+            rows="4"></textarea>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-message">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            [disabled]="isCreatingPost() || !postForm.form.valid"
+            class="create-btn">
+            @if (isCreatingPost()) {
+              <span>Création...</span>
+            } @else {
+              <span>Créer le post</span>
+            }
+          </button>
+          <button type="button" class="btn-secondary" (click)="toggleCreateForm()">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading() && !showCreateForm()) {
+    <div class="loading">Chargement des posts...</div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage() && !showCreateForm()) {
+    <div class="error-message">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Posts List -->
+  <div class="posts-list">
+    @if (posts().length === 0 && !isLoading()) {
+      <div class="no-posts">Aucun post disponible.</div>
+    } @else {
+      @for (post of posts(); track post.id) {
+        <article class="post-card">
+          <header class="post-header">
+            <h3>
+              <a routerLink="/posts/{{ post.id }}" class="post-title-link">
+                {{ post.title }}
+              </a>
+            </h3>
+            <div class="post-meta">
+              <span class="author">
+                @if (post.expand?.author?.name) {
+                  <span>Par {{ post.expand?.author?.name }}</span>
+                } @else {
+                  <span>Par Utilisateur inconnu</span>
+                }
+              </span>
+              <span class="date">{{ formatDate(post.created) }}</span>
+            </div>
+          </header>
+
+          <div class="post-content">
+            <p>{{ post.content }}</p>
+          </div>
+
+          <div class="post-actions">
+            <a routerLink="/posts/{{ post.id }}" class="view-btn">
+              Voir les messages
+            </a>
+            @if (currentUser()?.id === post.author) {
+              <button (click)="deletePost(post.id)" class="delete-btn">
+                Supprimer
+              </button>
+            }
+          </div>
+        </article>
+      }
+    }
+  </div>
+</div>
