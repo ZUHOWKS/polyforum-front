@@ -77,12 +77,24 @@ export class PostsService {
     this.cache.clear();
   }
 
-  async getPosts(): Promise<Post[]> {
+  async getPosts(page: number): Promise<{
+    items: Post[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+    totalItems: number;
+  }> {
     try {
       // Optimize query with only necessary fields, pagination, and efficient sorting
-      const url = `${this.apiUrl}/posts/records?sort=-created&expand=author&fields=id,title,content,author,created,expand.author.id,expand.author.name&perPage=50`;
+      const url = `${this.apiUrl}/posts/records?page=${page}&perPage=10&sort=-created&expand=author&fields=id,title,content,author,created,expand.author.id,expand.author.name`;
       const data = await this.makeRequest(url);
-      return data.items || [];
+      return {
+        items: data.items || [],
+        page: data.page || 1,
+        perPage: data.perPage || 10,
+        totalPages: data.totalPages || 1,
+        totalItems: data.totalItems || 0
+      };
     } catch (error) {
       console.error('Error fetching posts:', error);
       throw error;

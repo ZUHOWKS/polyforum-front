@@ -78,17 +78,52 @@
       {{ errorMessage() }}
     </div>
   }
+  <div class="posts-list-container">
+    <!-- Pagination Controls (outside the loop) -->
+    @if (totalPages() > 1) {
+      <div class="pagination-controls">
+      <button
+        (click)="loadPosts(page() - 1)"
+        [disabled]="page() === 1 || isLoading()"
+        class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15,18 9,12 15,6"></polyline>
+        </svg>
+      </button>
 
-  <!-- Posts List -->
-  <div class="posts-list">
-    @if (posts().length === 0 && !isLoading()) {
-      <div class="no-posts">Aucun post disponible.</div>
-    } @else {
-      @for (post of posts(); track post.id) {
-        <article class="post-card">
-          <header class="post-header">
-            <h3>
-              <a routerLink="/posts/{{ post.id }}" class="post-title-link">
+      <div class="page-info">
+        <span class="page-text">Page</span>
+        <input
+        type="number"
+        [value]="page()"
+        (input)="onPageChange($event)"
+        min="1"
+        [max]="totalPages()"
+        [disabled]="isLoading()"
+        class="page-input">
+        <span class="page-text">sur {{ totalPages() }}</span>
+      </div>
+
+      <button
+        (click)="loadPosts(page() + 1)"
+        [disabled]="page() === totalPages() || isLoading()"
+        class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+      </button>
+      </div>
+    }
+    <!-- Posts List -->
+    <div class="posts-list">
+      @if (posts().length === 0 && !isLoading()) {
+        <div class="no-posts">Aucun post disponible.</div>
+      } @else {
+        @for (post of posts(); track post.id) {
+          <article class="post-card">
+            <header class="post-header">
+              <h3>
+                <a routerLink="/posts/{{ post.id }}" class="post-title-link">
                 {{ post.title }}
               </a>
             </h3>
@@ -119,7 +154,8 @@
             }
           </div>
         </article>
+        }
       }
-    }
+    </div>
   </div>
 </div>

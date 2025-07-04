@@ -285,3 +285,29 @@
     gap: 0.5rem;
   }
 }
+
+.posts-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem;
+}
+
+.page-info {
+  width: 100%;
+  text-align: center;
+}
+
+.page-input {
+  width: 60px;
+  padding: 0.5rem;
+  margin: 0 0.2rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}

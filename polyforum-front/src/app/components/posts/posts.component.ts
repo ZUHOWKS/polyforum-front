@@ -19,6 +19,8 @@ export class PostsComponent implements OnInit {
 
   // Signals for component state
   posts = signal<Post[]>([]);
+  page = signal(1);
+  totalPages = signal(1);
   isLoading = signal(false);
   errorMessage = signal('');
   isCreatingPost = signal(false);
@@ -45,18 +47,29 @@ export class PostsComponent implements OnInit {
     }
   }
 
-  async loadPosts() {
+  async loadPosts(page: number = 1) {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
     try {
-      const posts = await this.postsService.getPosts();
-      this.posts.set(posts);
-    } catch (error: any) {
+      const postsResponse = await this.postsService.getPosts(page);
+      this.posts.set(postsResponse.items);
+      this.page.set(postsResponse.page);
+      this.totalPages.set(postsResponse.totalPages);
+    } catch (error: unknown) {
       this.errorMessage.set('Erreur lors du chargement des posts');
       console.error('Error loading posts:', error);
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  onPageChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const newPage = parseInt(target.value, 10);
+
+    if (newPage >= 1 && newPage <= this.totalPages() && newPage !== this.page()) {
+      this.loadPosts(newPage);
     }
   }
 
@@ -75,7 +88,7 @@ export class PostsComponent implements OnInit {
       this.newPostContent = '';
       this.showCreateForm.set(false);
       await this.loadPosts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.errorMessage.set('Erreur lors de la création du post');
       console.error('Error creating post:', error);
     } finally {
@@ -90,8 +103,8 @@ export class PostsComponent implements OnInit {
 
     try {
       await this.postsService.deletePost(postId);
-      await this.loadPosts();
-    } catch (error: any) {
+      await this.loadPosts(this.page());
+    } catch (error: unknown) {
       this.errorMessage.set('Erreur lors de la suppression du post');
       console.error('Error deleting post:', error);
     }
